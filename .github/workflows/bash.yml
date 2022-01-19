@@ -16,8 +16,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: checkout dev
         run: |
-          git checkout -b main git@github.com:Tencent/tdesign-vue-starter.git vue
-          rm -rf ./vue/.git
+          wget https://github.com/Tencent/tdesign-vue-starter/archive/refs/tags/v0.1.0.tar.gz
+          tar xf tdesign-vue-starter-0.1.0.tar.gz
+          mv tdesign-vue-starter-0.1.0 vue
+          wget https://github.com/Tencent/tdesign-vue-next-starter/archive/refs/tags/0.1.0.tar.gz
+          tar xf tdesign-vue-next-starter-0.1.0.gz
+          mv tdesign-vue-next-starter-0.1.0 vue-next
       - name: Deploy vue 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
@@ -30,10 +34,6 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           BRANCH: master
           FOLDER: vue
-      - name: checkout vue-next
-        run: |
-          git checkout -b main git@github.com:Tencent/tdesign-vue-next-starter.git vue-next
-          rm -rf ./vue-next/.git
       - name: Deploy vue-next 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
