@@ -1,0 +1,74 @@
+name: deploy
+on:
+  push:
+    branches: [ bash ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 23 * * *"
+# 设置上海时区
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: checkout dev
+        run: |
+          git checkout -b main git@github.com:Tencent/tdesign-vue-starter.git vue
+          rm -rf ./vue/.git
+      - name: Deploy vue 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: vue
+          FOLDER: vue
+      - name: Deploy master 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: master
+          FOLDER: vue
+      - name: checkout vue-next
+        run: |
+          git checkout -b main git@github.com:Tencent/tdesign-vue-next-starter.git vue-next
+          rm -rf ./vue-next/.git
+      - name: Deploy vue-next 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: vue-next
+          FOLDER: vue-next
+      - name: Deploy main 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: main
+          FOLDER: vue-next
+
+  clean:
+    name: Clean
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🚀
+        uses: actions/checkout@v2
+        with:
+          repository: 'jdsync/Workflows-Cleaner'
+      - name: Set up Python 🚀
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install pipenv 🚀
+        env:
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.ACTION_SECRET }}
+          EXPIRE_TIME: '1h'
+        run: |
+          python -m pip install --upgrade pipenv wheel
+          pipenv install
+          pipenv run python run.py
+      - name: Upload coverage to Codecov  🚀
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
