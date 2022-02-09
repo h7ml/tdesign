@@ -1,0 +1,147 @@
+name: sync
+on:
+  push:
+    branches: [ bash ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 23 * * *"
+env:
+  TZ: Asia/Shanghai
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout vue2 🚀
+        run: |
+          git clone --depth=1 https://github.com/Tencent/tdesign-vue-starter.git vue2
+          rm -rf vue2/.github/workflows 
+          mkdir -p vue2/.github/workflows 
+          wget  https://cdn.jsdelivr.net/gh/h7ml/tdesign@bash/action/vue2.yml -O  vue2/.github/workflows/vue2.yml
+      - name: checkout vue 🚀
+        run: |
+          git clone --depth=1 https://github.com/Tencent/tdesign-vue-next-starter.git vue
+          rm -rf vue/.github/workflows vue/pnpm-lock.yaml
+          mkdir -p vue/.github/workflows 
+          wget  https://cdn.jsdelivr.net/gh/h7ml/tdesign@bash/action/vue.yml -O  vue/.github/workflows/vue.yml
+      - name: checkout tdesign-vue 🚀
+        run: |
+          git clone --depth=1 https://github.com/Tencent/tdesign-vue.git tdesign-vue
+          rm -rf tdesign-vue/.github
+      - name: checkout tdesign-react 🚀
+        run: |
+          git clone --depth=1 https://github.com/Tencent/tdesign-react.git tdesign-react
+          rm -rf tdesign-react/.github
+      - name: Deploy to Netlify vue 🚀
+        uses: nwtgck/actions-netlify@v1.2
+        with:
+          publish-dir: './vue'
+          github-token: ${{ secrets.ACCESS_TOKEN }}
+          deploy-message: "Deploy from vue Actions"
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          overwrites-pull-request-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.VUE_SITE_ID }}
+      - name: Deploy to Netlify vue2 🚀
+        uses: nwtgck/actions-netlify@v1.2
+        with:
+          publish-dir: './vue2'
+          github-token: ${{ secrets.ACCESS_TOKEN }}
+          deploy-message: "Deploy from vue2 Actions"
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          overwrites-pull-request-comment: false
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.VUE2_SITE_ID }}
+      - name: Deploy branch vue2 🚀
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        run: |
+          cd vue2
+          rm -rf .git
+          git init 
+          git add . 
+          git config --local user.email "h7ml@qq.com"
+          git config --local user.name "h7ml"
+          git commit -m ":new: tdesign-vue-starter" -a
+          git branch -M vue2
+          git push -f "https://${GITHUB_TOKEN}@github.com/h7ml/tdesign.git" vue2
+      - name: Deploy branch vue 🚀
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        run: |
+          cd vue
+          rm -rf .git
+          git init 
+          git add .
+          git config --local user.email "h7ml@qq.com"
+          git config --local user.name "h7ml"
+          git commit -m ":new: tdesign-vue-next-starter" -a
+          git branch -M vue
+          git push -f "https://${GITHUB_TOKEN}@github.com/h7ml/tdesign.git" vue
+      - name: Deploy branch tdesign-vue 🚀
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        run: |
+          cd tdesign-vue
+          rm -rf .git
+          git init 
+          git add .
+          git config --local user.email "h7ml@qq.com"
+          git config --local user.name "h7ml"
+          git commit -m ":new: tdesign-vue" -a
+          git branch -M tdesign-vue
+          git push -f "https://${GITHUB_TOKEN}@github.com/h7ml/tdesign.git" tdesign-vue
+      - name: Deploy branch tdesign-react 🚀
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        run: |
+          cd tdesign-react
+          rm -rf .git
+          git init 
+          git add .
+          git config --local user.email "h7ml@qq.com"
+          git config --local user.name "h7ml"
+          git commit -m ":new: tdesign-react" -a
+          git branch -M tdesign-react
+          git push -f "https://${GITHUB_TOKEN}@github.com/h7ml/tdesign.git" tdesign-react
+      - name: Sync to h7ml 🚀
+        uses: wearerequired/git-mirror-action@master
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.GITEE_PRIVATE_KEY }}
+        with:
+          source-repo: git@github.com:h7ml/tdesign.git
+          destination-repo: git@gitee.com:h7ml/tdesign.git
+  clear:
+    name: clear
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🚀
+        uses: actions/checkout@v2
+        with:
+          repository: 'h7ml/Workflows-Cleaner'
+      - name: Set up Python 🚀
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: python cache 🚀
+        uses: actions/cache@v2
+        with:
+          path: "~/.cache/pip"
+          key: "${{ runner.os }}-pip-cache-${{ hashFiles('setup.cfg') }}"
+          restore-keys: |
+            "${{ runner.os }}-pip-cache-"
+            "${{ runner.os }}-pip-"
+      - name: Install pipenv 🚀
+        env:
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          EXPIRE_TIME: '1h'
+        run: |
+          python -m pip install --upgrade pipenv wheel
+          pipenv install
+          pipenv run python run.py
+    needs: sync
