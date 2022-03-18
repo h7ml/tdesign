@@ -15,14 +15,14 @@ jobs:
       - name: checkout vue2 🚀
         run: |
           git clone --depth=1 https://github.com/Tencent/tdesign-vue-starter.git vue2
-          rm -rf vue2/.github/workflows 
-          mkdir -p vue2/.github/workflows 
+          rm -rf vue2/.github/workflows
+          mkdir -p vue2/.github/workflows
           wget  https://cdn.jsdelivr.net/gh/h7ml/tdesign@bash/action/vue2.yml -O  vue2/.github/workflows/vue2.yml
       - name: checkout vue 🚀
         run: |
           git clone --depth=1 https://github.com/Tencent/tdesign-vue-next-starter.git vue
           rm -rf vue/.github/workflows vue/pnpm-lock.yaml
-          mkdir -p vue/.github/workflows 
+          mkdir -p vue/.github/workflows
           wget  https://cdn.jsdelivr.net/gh/h7ml/tdesign@bash/action/vue.yml -O  vue/.github/workflows/vue.yml
       - name: checkout tdesign-vue 🚀
         run: |
@@ -32,38 +32,38 @@ jobs:
         run: |
           git clone --depth=1 https://github.com/Tencent/tdesign-react.git tdesign-react
           rm -rf tdesign-react/.github
-      - name: Deploy to Netlify vue 🚀
-        uses: nwtgck/actions-netlify@v1.2
-        with:
-          publish-dir: './vue'
-          github-token: ${{ secrets.ACCESS_TOKEN }}
-          deploy-message: "Deploy from vue Actions"
-          enable-pull-request-comment: false
-          enable-commit-comment: true
-          overwrites-pull-request-comment: false
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.VUE_SITE_ID }}
-      - name: Deploy to Netlify vue2 🚀
-        uses: nwtgck/actions-netlify@v1.2
-        with:
-          publish-dir: './vue2'
-          github-token: ${{ secrets.ACCESS_TOKEN }}
-          deploy-message: "Deploy from vue2 Actions"
-          enable-pull-request-comment: false
-          enable-commit-comment: true
-          overwrites-pull-request-comment: false
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.VUE2_SITE_ID }}
+#      - name: Deploy to Netlify vue 🚀
+#        uses: nwtgck/actions-netlify@v1.2
+#        with:
+#          publish-dir: './vue'
+#          github-token: ${{ secrets.ACCESS_TOKEN }}
+#          deploy-message: "Deploy from vue Actions"
+#          enable-pull-request-comment: false
+#          enable-commit-comment: true
+#          overwrites-pull-request-comment: false
+#        env:
+#          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+#          NETLIFY_SITE_ID: ${{ secrets.VUE_SITE_ID }}
+#      - name: Deploy to Netlify vue2 🚀
+#        uses: nwtgck/actions-netlify@v1.2
+#        with:
+#          publish-dir: './vue2'
+#          github-token: ${{ secrets.ACCESS_TOKEN }}
+#          deploy-message: "Deploy from vue2 Actions"
+#          enable-pull-request-comment: false
+#          enable-commit-comment: true
+#          overwrites-pull-request-comment: false
+#        env:
+#          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+#          NETLIFY_SITE_ID: ${{ secrets.VUE2_SITE_ID }}
       - name: Deploy branch vue2 🚀
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         run: |
           cd vue2
           rm -rf .git
-          git init 
-          git add . 
+          git init
+          git add .
           git config --local user.email "h7ml@qq.com"
           git config --local user.name "h7ml"
           git commit -m ":new: tdesign-vue-starter" -a
@@ -75,7 +75,7 @@ jobs:
         run: |
           cd vue
           rm -rf .git
-          git init 
+          git init
           git add .
           git config --local user.email "h7ml@qq.com"
           git config --local user.name "h7ml"
@@ -88,7 +88,7 @@ jobs:
         run: |
           cd tdesign-vue
           rm -rf .git
-          git init 
+          git init
           git add .
           git config --local user.email "h7ml@qq.com"
           git config --local user.name "h7ml"
@@ -101,7 +101,7 @@ jobs:
         run: |
           cd tdesign-react
           rm -rf .git
-          git init 
+          git init
           git add .
           git config --local user.email "h7ml@qq.com"
           git config --local user.name "h7ml"
